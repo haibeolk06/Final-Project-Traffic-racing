@@ -1,118 +1,12 @@
 import pygame
 import random, time,os
-
+import os
 import collections
-import heapq
 import sys
 import math
 from termcolor import colored
 
-class Queue:
-  def __init__(self):
-    self.queue = []
-  
-  def push(self, label):
-    self.queue.append(label)
-
-  def pop(self):
-    return self.queue.pop(0)
-  
-  def is_empty(self):
-    return len(self.queue) == 0
-
-
-class Grid:
-  def __init__(self, size, impediment, gas):   
-    self.m = size
-    self.impediment = impediment
-    self.gas = gas
-
-  def in_bounds(self, pos):
-    x, y  = pos
-    # check if pos (x,y) is in maze matrix
-    return x >=0 and x < self.m and y >= 0 and y < self.m
-
-  def is_impediment(self, pos):
-    for p in self.impediment:
-      if pos == p:
-        return False       
-    return True 
-  
-  def is_gas(self, pos):
-    for p in self.gas:
-      if pos == p:
-        return False
-    return True 
-
-  def neighbors(self, pos):
-    # Return a list of positions are neighbors of pos
-    x, y = pos
-    neighbors = [(x,y+1),(x,y-1),(x+1,y),(x-1,y)]   
-    # print(neighbors)
-    valid_neighbors = []
-    for p in neighbors:
-      if self.in_bounds(p) and self.is_impediment(p):
-        valid_neighbors.append(p)
-    #print(self.impediment[0])
-    #print(type(valid_neighbors[0]))
-    return valid_neighbors
-
-  def draw(self, path=[]):
-    for i in range(self.m):
-      for j in range(self.m):
-        if (i,j) in path:
-          screen.blit(Flag,(50 + 40 , 50 + 40 ))    
-    pygame.display.flip()       
-
-
-class SearchAlg:
-  def __init__(self, grid, start, goal):
-    self.grid = grid
-    self.start = start
-    self.goal = goal
-    self.came_from = {}
-
-  def trace_path(self):
-    curr = self.goal
-    path = []
-    while curr != self.start:
-      path.append(curr)
-      curr = self.came_from[curr]
-    path.append(self.start)
-    path.reverse()
-
-    print(f"Duong di tu {self.start} -> {self.goal}: ", end="")
-    for v in path:
-      print(f"{v}", end=" ")
-    return path
-
-  def BFS(self):
-    openSet = Queue()
-    openSet.push(self.start)
-
-    self.came_from = {}
-    visited = list(self.start)
-
-    while not openSet.is_empty():
-      curr_node = openSet.pop()
-
-      if curr_node == self.goal:
-        print(colored("Finded goal.", "green"))       
-        path = self.trace_path() # Remove path = None
-        print()
-        self.grid.draw(path=path)
-        return True
-
-      for next_node in self.grid.neighbors(curr_node):        
-        if next_node not in visited:
-          self.came_from[next_node] = curr_node
-          visited.append(next_node)
-          openSet.push(next_node)   
-          
-          
-    print(colored("Can not find!!!", "red"))
-    return False
-
+import search
 
 #khoi tao game
 pygame.init()
@@ -120,11 +14,12 @@ pygame.init()
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 YELLOW = ( 255, 255, 102)
+GREY = (200, 207, 202)
 
 size = (500, 500)
 screen = pygame.display.set_mode(size)
 screen.fill(WHITE)
-
+font = pygame.font.SysFont('sans',22)
 #tieu de
 pygame.display.set_caption("Traffic racing")
 
@@ -171,49 +66,105 @@ for i in range(2,len(Data)):
         break
 f.close()
 
+for i in range(len(Impediment)):
+  Impediment[i][0] = int(Impediment[i][0])
+  Impediment[i][1] = int(Impediment[i][1])
+  Impediment[i] = tuple(Impediment[i])
 
+for i in range(len(GasStation)):
+  GasStation[i][0] = int(GasStation[i][0])
+  GasStation[i][1] = int(GasStation[i][1])
+  GasStation[i] = tuple(GasStation[i])
 
+g = search.Grid(MatrixSize, Impediment, GasStation)
+search = search.SearchAlg(g, AmountOfGas, (0,0), (9,9))
+path = []
 
+def draw():
+  #for v in path:
+  #screen.blit(Flag,(50 + 40 * v[1], 50 + 40 * v[0]))
+  if(not path):
+    return
+  item = path.pop(0)
+  screen.blit(Flag,(50 + 40 * item[1], 50 + 40 * item[0]))
+
+def BFS():
+  return search.BFS()
+def DFS():
+  search.DFS()
+def UCS():
+  search.UCS()
+def a_star():
+  search.a_star()
+
+FPS = 60
+fpsClock = pygame.time.Clock()
 
 #hien du lieu
 while not done:
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
+        if event.type == pygame.MOUSEBUTTONDOWN:
+          if event.button==1 and mouse_x<95 and mouse_x>45 and mouse_y>5 and mouse_y<35:
+            # path.clear()
+            path = BFS()
 
+          if event.button==1 and mouse_x<215 and mouse_x>165 and mouse_y>5 and mouse_y<35:
+            # path.clear()
+            path = DFS()
+          if event.button==1 and mouse_x<335 and mouse_x>285 and mouse_y>5 and mouse_y<35:
+            # path.clear()
+            path = UCS()  
+          if event.button==1 and mouse_x<450 and mouse_x>405 and mouse_y>5 and mouse_y<35:
+            # path.clear()
+            path = a_star()
+            
+          if event.button==1 and mouse_x<285 and mouse_x>225 and mouse_y>457 and mouse_y<487:
+            # Reset()
+            os.startfile(__file__)
+            sys.exit()
+    draw()
+    
+    pygame.draw.rect(screen, GREY, [48,5,43,25])
+    pygame.draw.rect(screen, GREY, [168,5,43,25])
+    pygame.draw.rect(screen, GREY, [288,5,43,25])
+    pygame.draw.rect(screen, GREY, [408,5,40,25])
+    pygame.draw.rect(screen, GREY, [225,460,60,25])
+    bfstext=font.render('BFS',True, BLACK)
+    dfstext=font.render('DFS',True, BLACK)
+    ucstext=font.render('UCS',True, BLACK)
+    astarttext=font.render('A*',True, BLACK)
+    resettext=font.render('Reset',True, BLACK)
+    screen.blit(bfstext,[51,5])
+    screen.blit(dfstext,[170,5])
+    screen.blit(ucstext,[290,5])
+    screen.blit(astarttext,[410,5])
+    screen.blit(resettext,[230,460])
     screen.blit(Racer, [50, 50])
+    
 
     for i in range(10):
         for j in range(10):
             pygame.draw.rect(screen, BLACK, [50 + 40 * j, 50 + 40 * i, 40, 40], 1)
 
     for i in range(len(Impediment)):
-        screen.blit(BarrierImage, [50 + 40 * int(Impediment[i][1]), 50 + 40 * int(Impediment[i][0])])
-        Impediment[i][1] = int(Impediment[i][1])
-        Impediment[i][0] = int(Impediment[i][0])
-        
+        screen.blit(BarrierImage, [50 + 40 * int(Impediment[i][1]), 50 + 40 * int(Impediment[i][0])])               
 
     for i in range(len(GasStation)):
-        screen.blit(GasStationImage,(50 + 40 * int(GasStation[i][1]), 50 + 40 * int(GasStation[i][0])))
-    
+        screen.blit(GasStationImage,(50 + 40 * int(GasStation[i][1]), 50 + 40 * int(GasStation[i][0])))      
+
     screen.blit(Flag,(50 + 40 * int(Destination[0][1]), 50 + 40 * int(Destination[0][0])))
     
     pygame.display.flip()
+    fpsClock.tick(FPS)
+
 #end
-#pygame.quit()
+pygame.quit()
+quit()
 
-
-
-
-#Impediment[0] = tuple(Impediment[0])
-for i in range(len(Impediment)):
-  Impediment[i] = tuple(Impediment[i])
-
-g = Grid(MatrixSize, Impediment, GasStation)
-#print(Impediment)
-search = SearchAlg(g, (0,0), (9,9))
-print("\n-------- BFS --------")
-search.BFS()
 
 
 
