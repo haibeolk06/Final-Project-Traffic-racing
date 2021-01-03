@@ -176,12 +176,14 @@ class SearchAlg:
       
       if curr_node == self.goal:
         path = self.trace_path()
-        if not path:
-          print(colored("Can not find!!!", "red"))
-          return False
-        # self.grid.draw(path=path)
-        # print(colored("Finded goal.", "green"))  
-        # return True
+        return path
+        # if not path:
+        #   print(colored("Can not find!!!", "red"))
+        #   return False
+
+        self.grid.draw(path=path)
+        print(colored("Finded goal.", "green"))  
+        return True
 
       for next_node in self.grid.neighbors_DFS(curr_node):        
         if next_node not in visited:
@@ -206,15 +208,15 @@ class SearchAlg:
         
       if curr_node == self.goal:            
         path = self.trace_path()
+        return path
+        # if not path:
+        #   print(colored("Can not find!!!", "red"))
+        #   print(gScore[0])
+        #   return False
 
-        if not path:
-          print(colored("Can not find!!!", "red"))
-          print(gScore[0])
-          return False
-
-        # self.grid.draw(path=path)
-        # print(colored("Finded goal.", "green"))  
-        # return True
+        self.grid.draw(path=path)
+        print(colored("Finded goal.", "green"))  
+        return True
       
       for next_pos in self.grid.neighbors(curr_node):     
         new_g = gScore[curr_node] + 1
@@ -239,14 +241,14 @@ class SearchAlg:
      
       if curr_node == self.goal:            
         path = self.trace_path()
+        return path
+        # if not path:
+        #   print(colored("Can not find!!!", "red"))
+        #   return False
 
-        if not path:
-          print(colored("Can not find!!!", "red"))
-          return False
-
-        # self.grid.draw(path=path)
-        # print(colored("Finded goal.", "green"))  
-        # return True
+        self.grid.draw(path=path)
+        print(colored("Finded goal.", "green"))  
+        return True
 
       for next_pos in self.grid.neighbors(curr_node):
         new_g = gScore[curr_node] + 1
