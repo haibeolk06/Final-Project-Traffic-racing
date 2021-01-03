@@ -111,10 +111,7 @@ while not done:
           if event.button==1 and mouse_x<450 and mouse_x>405 and mouse_y>5 and mouse_y<35:
             path = search.a_star()
             
-          if event.button==1 and mouse_x<285 and mouse_x>225 and mouse_y>457 and mouse_y<487:
-            os.startfile(__file__)
-            sys.exit()
-
+          
           screen.fill(WHITE)
     draw()
 
@@ -122,17 +119,17 @@ while not done:
     pygame.draw.rect(screen, GREY, [168,5,43,25])
     pygame.draw.rect(screen, GREY, [288,5,43,25])
     pygame.draw.rect(screen, GREY, [408,5,40,25])
-    pygame.draw.rect(screen, GREY, [225,460,60,25])
+    
     bfstext=font.render('BFS',True, BLACK)
     dfstext=font.render('DFS',True, BLACK)
     ucstext=font.render('UCS',True, BLACK)
     astarttext=font.render('A*',True, BLACK)
-    resettext=font.render('Reset',True, BLACK)
+    
     screen.blit(bfstext,[51,5])
     screen.blit(dfstext,[170,5])
     screen.blit(ucstext,[290,5])
     screen.blit(astarttext,[410,5])
-    screen.blit(resettext,[230,460])
+    
     screen.blit(Racer, [50, 50])
     
 
