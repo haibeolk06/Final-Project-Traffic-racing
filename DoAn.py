@@ -88,15 +88,6 @@ def draw():
   item = path.pop(0)
   screen.blit(Flag,(50 + 40 * item[1], 50 + 40 * item[0]))
 
-# def BFS():
-#   return search.BFS()
-# def DFS():
-#   search.DFS()
-# def UCS():
-#   search.UCS()
-# def a_star():
-#   search.a_star()
-
 FPS = 60
 fpsClock = pygame.time.Clock()
 
@@ -109,25 +100,24 @@ while not done:
             done = True
         if event.type == pygame.MOUSEBUTTONDOWN:
           if event.button==1 and mouse_x<95 and mouse_x>45 and mouse_y>5 and mouse_y<35:
-            # path.clear()
             path = search.BFS()
 
           if event.button==1 and mouse_x<215 and mouse_x>165 and mouse_y>5 and mouse_y<35:
-            # path.clear()
             path = search.DFS()
+
           if event.button==1 and mouse_x<335 and mouse_x>285 and mouse_y>5 and mouse_y<35:
-            # path.clear()
-            path = search.UCS()  
+            path = search.UCS() 
+
           if event.button==1 and mouse_x<450 and mouse_x>405 and mouse_y>5 and mouse_y<35:
-            # path.clear()
             path = search.a_star()
             
           if event.button==1 and mouse_x<285 and mouse_x>225 and mouse_y>457 and mouse_y<487:
-            # Reset()
             os.startfile(__file__)
             sys.exit()
+
+          screen.fill(WHITE)
     draw()
-    
+
     pygame.draw.rect(screen, GREY, [48,5,43,25])
     pygame.draw.rect(screen, GREY, [168,5,43,25])
     pygame.draw.rect(screen, GREY, [288,5,43,25])
